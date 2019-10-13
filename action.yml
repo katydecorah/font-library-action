@@ -1,0 +1,5 @@
+name: Update Font Library
+description: 'Update Font Library when a new font is added'
+runs:
+  using: 'node12'
+  main: 'index.js'
