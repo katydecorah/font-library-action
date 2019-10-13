@@ -14,56 +14,32 @@ try {
       if (error) core.setFailed(error.message);
       if (response.statusCode == 200) {
         // get current fonts in google fonts api
-        const data = JSON.parse(body);
-
-        // get data from families.json
-        const buffer = JSON.parse(fs.readFileSync('families.json'));
-
-        // get full library
-        let library = buffer;
-
+        const remote = JSON.parse(body);
+        const remoteFonts = remote.items.map(font => font.family);
         // get list of families in font library
-        const libraryFonts = buffer.map(font => font.family);
+        let local = JSON.parse(fs.readFileSync('families.json'));
+        const localFonts = local.map(font => font.family);
+        // get difference between remote and local libraries
+        const diff = remoteFonts.filter(x => !localFonts.includes(x));
 
-        // track missing fonts
-        const missing = [];
-
-        // see if every google font is in font library
-        data.items.forEach(font => {
-          if (libraryFonts.indexOf(font.family) == -1) {
-            // if not, add to library
-            library.push({ family: font.family, tags: [] });
-            missing.push(font.family);
-          }
-        });
-
-        // if there are missing fonts
-        if (missing.length > 0) {
-          library = sortByKey(library, 'family');
-
-          // write new data to families.json
+        if (diff.length > 0) {
+          // add diff to localFonts
+          diff.map(font => local.push({ family: font, tags: [] }));
+          // sort by "family"
+          local = local.sort((a, b) => (a.family > b.family ? 1 : -1));
+          // write file
           fs.writeFileSync(
             'families.json',
-            stringify(library, { maxLength: 200 }),
+            stringify(local, { maxLength: 200 }),
             'utf-8'
           );
-          console.log('Added ' + missing.join(', ') + ' to families.json');
+          console.log(`Updated library: ${diff.join(', ')}`);
         } else {
-          // otherwise carry on
-          console.log('No new fonts to add');
+          console.log('Nothing to update.');
         }
       }
     }
   );
 } catch (error) {
   core.setFailed(error.message);
-}
-
-// sort the library
-function sortByKey(array, key) {
-  return array.sort((a, b) => {
-    const x = a[key];
-    const y = b[key];
-    return x < y ? -1 : x > y ? 1 : 0;
-  });
 }
