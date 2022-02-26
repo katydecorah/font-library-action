@@ -8847,26 +8847,26 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function library() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const response = yield fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyDK4Jz71F7DQCrUhXYaF3xgEXoQGLDk5iE");
-            const library = yield response.json();
+            const response = yield fetch(`https://www.googleapis.com/webfonts/v1/webfonts?key=${(0,core.getInput)('GoogleToken')}`);
+            const library = (yield response.json());
             // build list of family names in Google Fonts API
             const remoteFonts = library.items.map(({ family }) => family);
             // get list of families in font library
-            let local = JSON.parse((0,external_fs_.readFileSync)('families.json', 'utf-8'));
-            const localFonts = local.map(font => font.family);
+            let local = JSON.parse((0,external_fs_.readFileSync)("families.json", "utf-8"));
+            const localFonts = local.map((font) => font.family);
             // get difference between remote and local libraries
-            const diff = remoteFonts.filter(x => !localFonts.includes(x));
+            const diff = remoteFonts.filter((x) => !localFonts.includes(x));
             if (diff.length > 0) {
                 // add diff to localFonts
-                diff.map(font => local.push({ family: font, tags: [] }));
+                diff.map((font) => local.push({ family: font, tags: [] }));
                 // sort by "family"
                 local = local.sort((a, b) => (a.family > b.family ? 1 : -1));
                 // write file
-                (0,external_fs_.writeFileSync)('families.json', json_stringify_pretty_compact_default()(local, { maxLength: 200 }), 'utf-8');
-                console.log(`Updated library: ${diff.join(', ')}`);
+                (0,external_fs_.writeFileSync)("families.json", json_stringify_pretty_compact_default()(local, { maxLength: 200 }), "utf-8");
+                console.log(`Updated library: ${diff.join(", ")}`);
             }
             else {
-                console.log('Nothing to update.');
+                console.log("Nothing to update.");
             }
         }
         catch (error) {

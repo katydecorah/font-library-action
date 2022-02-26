@@ -1,7 +1,8 @@
+name: Update library
+
 on:
   issues:
     types: opened
-
 
 jobs:
   update_library:
@@ -9,14 +10,14 @@ jobs:
     name: Update library
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Update library
         uses: ./
-        env:
+        with:
           GoogleToken: ${{ secrets.GoogleToken }}
       - name: Commit files
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A && git commit -m "Updated font library"
-          git push "https://${GITHUB_ACTOR}:${{secrets.GITHUB_TOKEN}}@github.com/${GITHUB_REPOSITORY}.git" HEAD:${GITHUB_REF}
+          git push

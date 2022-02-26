@@ -1,6 +1,6 @@
 "use strict";
 
-import { setFailed } from "@actions/core";
+import { getInput, setFailed } from "@actions/core";
 import fetch from "node-fetch";
 import { readFileSync, writeFileSync } from "fs";
 import stringify from "json-stringify-pretty-compact";
@@ -8,7 +8,9 @@ import stringify from "json-stringify-pretty-compact";
 async function library() {
   try {
     const response = await fetch(
-      "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyDK4Jz71F7DQCrUhXYaF3xgEXoQGLDk5iE"
+      `https://www.googleapis.com/webfonts/v1/webfonts?key=${getInput(
+        "GoogleToken"
+      )}`
     );
     const library = (await response.json()) as { items: [] };
     // build list of family names in Google Fonts API
