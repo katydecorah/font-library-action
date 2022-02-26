@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "npm run lint",
     "prepare": "husky install",
     "build": "ncc build src/index.ts"
@@ -20,6 +20,10 @@
   },
   "devDependencies": {
     "@types/node": "^17.0.21",
+    "@typescript-eslint/eslint-plugin": "^5.12.1",
+    "@typescript-eslint/parser": "^5.12.1",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.4.0",
     "husky": "^7.0.0",
     "node-fetch": "^3.2.0",
     "prettier": "^2.5.1",

@@ -8847,7 +8847,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function library() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const response = yield fetch(`https://www.googleapis.com/webfonts/v1/webfonts?key=${(0,core.getInput)('GoogleToken')}`);
+            const response = yield fetch(`https://www.googleapis.com/webfonts/v1/webfonts?key=${(0,core.getInput)("GoogleToken")}`);
             const library = (yield response.json());
             // build list of family names in Google Fonts API
             const remoteFonts = library.items.map(({ family }) => family);
