@@ -3,3 +3,7 @@ description: "Update Font Library when a new font is added"
 runs:
   using: "node16"
   main: "dist/index.js"
+
+inputs:
+  GoogleToken:
+    description: Your Google Fonts access token.

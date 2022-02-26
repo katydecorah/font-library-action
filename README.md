@@ -1,7 +1,6 @@
 # font-library-action
 
-Update the library when a new font is added
-
+Update the library when a new font is added.
 
 <!-- START GENERATED DOCUMENTATION -->
 
@@ -33,4 +32,6 @@ jobs:
           git config --local user.name "GitHub Action"
           git add -A && git commit -m "Updated font library"
           git push
-```<!-- END GENERATED DOCUMENTATION -->
+```
+
+<!-- END GENERATED DOCUMENTATION -->
