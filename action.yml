@@ -1,5 +1,9 @@
 name: Update Font Library
-description: 'Update Font Library when a new font is added'
+description: "Update Font Library when a new font is added"
 runs:
-  using: 'node12'
-  main: 'index.js'
+  using: "node16"
+  main: "dist/index.js"
+
+inputs:
+  GoogleToken:
+    description: Your Google Fonts access token.
