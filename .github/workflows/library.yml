@@ -1,7 +1,6 @@
 name: Update library
 
 on:
-  push:
   issues:
     types: opened
 
