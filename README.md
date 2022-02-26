@@ -12,7 +12,6 @@ To use this action, create a new workflow in `.github/workflows` and modify it a
 name: Update library
 
 on:
-  push:
   issues:
     types: opened
 
