@@ -1,11 +1,10 @@
 name: Document GitHub action
 on:
-  push:
-    paths:
-      - ".github/workflows/library.yml"
-      - "action.yml"
-      - "package.json"
-      - "README.md"
+  paths:
+    - ".github/workflows/library.yml"
+    - "action.yml"
+    - "package.json"
+    - "README.md"
 
 jobs:
   document_action:
