@@ -11,8 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "json-stringify-pretty-compact": "^2.0.0",
-    "request": "^2.88.0"
+    "@actions/core": "^1.6.0",
+    "json-stringify-pretty-compact": "^3.0.0"
+  },
+  "devDependencies": {
+    "node-fetch": "^3.2.0",
+    "node-jest": "^0.2.0"
   }
 }
