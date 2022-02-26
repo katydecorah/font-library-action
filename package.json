@@ -8,7 +8,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "npm run lint",
     "prepare": "husky install",
-    "build": "ncc build src/index.ts"
+    "build": "ncc build src/index.ts",
+    "pretty-quick": "pretty-quick"
   },
   "keywords": [],
   "author": "",
