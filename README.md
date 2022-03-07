@@ -21,7 +21,7 @@ jobs:
     name: Update library
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Update library
         uses: katydecorah/font-library-action@v2.0.0
         with:
