@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.7.0",
     "@vercel/ncc": "^0.33.3",
     "json-stringify-pretty-compact": "^3.0.0"
   },
