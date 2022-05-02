@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@actions/core": "^1.7.0",
-    "@vercel/ncc": "^0.33.3",
+    "@vercel/ncc": "^0.33.4",
     "json-stringify-pretty-compact": "^3.0.0"
   },
   "devDependencies": {
