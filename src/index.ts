@@ -23,25 +23,47 @@ async function library() {
     let local = JSON.parse(readFileSync("families.json", "utf-8")) as Family[];
     const localFonts = local.map((font) => font.family);
     // get difference between remote and local libraries
-    const diff = remoteFonts.filter((x) => !localFonts.includes(x));
+    const familiesToAdd = remoteFonts.filter((x) => !localFonts.includes(x));
+    // get difference between local and remote library
+    const familiesToRemove = localFonts.filter((x) => !remoteFonts.includes(x));
 
-    if (diff.length > 0) {
-      // add diff to localFonts
-      diff.map((font) => local.push({ family: font, tags: [] }));
-      // sort by "family"
-      local = local.sort((a, b) => (a.family > b.family ? 1 : -1));
-      // write file
-      writeFileSync(
-        "families.json",
-        stringify(local, { maxLength: 200 }),
-        "utf-8"
-      );
-      info(`Updated library: ${diff.join(", ")}`);
-      exportVariable("UpdatedLibrary", true);
-    } else {
+    const hasFamiliesToAdd = familiesToAdd.length > 0;
+    const hasFamiliesToRemove = familiesToRemove.length > 0;
+
+    if (!hasFamiliesToAdd && !hasFamiliesToRemove) {
       exportVariable("UpdatedLibrary", false);
       info("Nothing to update.");
+      return;
     }
+
+    const commitMessage: string[] = [];
+
+    if (hasFamiliesToAdd) {
+      familiesToAdd.map((font) => local.push({ family: font, tags: [] }));
+      const added = `➕ Added: ${familiesToAdd.join(", ")}`;
+      commitMessage.push(added);
+      info(added);
+      exportVariable("UpdatedLibrary", true);
+    }
+
+    if (hasFamiliesToRemove) {
+      local = local.filter((f) => !familiesToRemove.includes(f.family));
+      const removed = `✂️ Removed: ${familiesToRemove.join(", ")}`;
+      commitMessage.push(removed);
+      info(removed);
+      exportVariable("UpdatedLibrary", true);
+    }
+
+    exportVariable("LibraryCommitMessage", commitMessage.join("; "));
+
+    writeFileSync(
+      "families.json",
+      stringify(
+        local.sort((a, b) => (a.family > b.family ? 1 : -1)),
+        { maxLength: 200 }
+      ),
+      "utf-8"
+    );
   } catch (error) {
     setFailed(error.message);
   }

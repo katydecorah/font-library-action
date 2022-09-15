@@ -9962,21 +9962,33 @@ function library() {
             let local = JSON.parse((0,external_fs_.readFileSync)("families.json", "utf-8"));
             const localFonts = local.map((font) => font.family);
             // get difference between remote and local libraries
-            const diff = remoteFonts.filter((x) => !localFonts.includes(x));
-            if (diff.length > 0) {
-                // add diff to localFonts
-                diff.map((font) => local.push({ family: font, tags: [] }));
-                // sort by "family"
-                local = local.sort((a, b) => (a.family > b.family ? 1 : -1));
-                // write file
-                (0,external_fs_.writeFileSync)("families.json", stringify(local, { maxLength: 200 }), "utf-8");
-                (0,core.info)(`Updated library: ${diff.join(", ")}`);
-                (0,core.exportVariable)('UpdatedLibrary', true);
-            }
-            else {
-                (0,core.exportVariable)('UpdatedLibrary', false);
+            const familiesToAdd = remoteFonts.filter((x) => !localFonts.includes(x));
+            // get difference between local and remote library
+            const familiesToRemove = localFonts.filter((x) => !remoteFonts.includes(x));
+            const hasFamiliesToAdd = familiesToAdd.length > 0;
+            const hasFamiliesToRemove = familiesToRemove.length > 0;
+            if (!hasFamiliesToAdd && !hasFamiliesToRemove) {
+                (0,core.exportVariable)("UpdatedLibrary", false);
                 (0,core.info)("Nothing to update.");
+                return;
             }
+            const commitMessage = [];
+            if (hasFamiliesToAdd) {
+                familiesToAdd.map((font) => local.push({ family: font, tags: [] }));
+                const added = `➕ Added: ${familiesToAdd.join(", ")}`;
+                commitMessage.push(added);
+                (0,core.info)(added);
+                (0,core.exportVariable)("UpdatedLibrary", true);
+            }
+            if (hasFamiliesToRemove) {
+                local = local.filter((f) => !familiesToRemove.includes(f.family));
+                const removed = `✂️ Removed: ${familiesToRemove.join(", ")}`;
+                commitMessage.push(removed);
+                (0,core.info)(removed);
+                (0,core.exportVariable)("UpdatedLibrary", true);
+            }
+            (0,core.exportVariable)('LibraryCommitMessage', commitMessage.join('; '));
+            (0,external_fs_.writeFileSync)("families.json", stringify(local.sort((a, b) => (a.family > b.family ? 1 : -1)), { maxLength: 200 }), "utf-8");
         }
         catch (error) {
             (0,core.setFailed)(error.message);
