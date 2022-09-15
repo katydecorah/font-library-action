@@ -1,8 +1,9 @@
 name: Update library
 
 on:
-  issues:
-    types: opened
+  schedule:
+    - cron: "30 5 * * *"
+  workflow_dispatch: # enables run button on github.com
 
 jobs:
   update_library:
