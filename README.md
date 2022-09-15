@@ -12,8 +12,9 @@ To use this action, create a new workflow in `.github/workflows` and modify it a
 name: Update library
 
 on:
-  issues:
-    types: opened
+  schedule:
+    - cron: "30 5 * * *"
+  workflow_dispatch: # enables run button on github.com
 
 jobs:
   update_library:
