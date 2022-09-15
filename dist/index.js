@@ -9970,10 +9970,12 @@ function library() {
                 local = local.sort((a, b) => (a.family > b.family ? 1 : -1));
                 // write file
                 (0,external_fs_.writeFileSync)("families.json", stringify(local, { maxLength: 200 }), "utf-8");
-                console.log(`Updated library: ${diff.join(", ")}`);
+                (0,core.info)(`Updated library: ${diff.join(", ")}`);
+                (0,core.exportVariable)('UpdatedLibrary', true);
             }
             else {
-                console.log("Nothing to update.");
+                (0,core.exportVariable)('UpdatedLibrary', false);
+                (0,core.info)("Nothing to update.");
             }
         }
         catch (error) {

@@ -1,9 +1,12 @@
 "use strict";
 
-import { getInput, setFailed } from "@actions/core";
+import { exportVariable, getInput, setFailed, info } from "@actions/core";
 import fetch from "node-fetch";
 import { readFileSync, writeFileSync } from "fs";
 import stringify from "json-stringify-pretty-compact";
+
+type Family = { family: string; tags: string[] };
+type ApiLibrary = { items: { family: string }[] };
 
 async function library() {
   try {
@@ -12,12 +15,12 @@ async function library() {
         "GoogleToken"
       )}`
     );
-    const library = (await response.json()) as { items: [] };
+    const library = (await response.json()) as ApiLibrary;
     // build list of family names in Google Fonts API
     const remoteFonts = library.items.map(({ family }) => family);
 
     // get list of families in font library
-    let local = JSON.parse(readFileSync("families.json", "utf-8"));
+    let local = JSON.parse(readFileSync("families.json", "utf-8")) as Family[];
     const localFonts = local.map((font) => font.family);
     // get difference between remote and local libraries
     const diff = remoteFonts.filter((x) => !localFonts.includes(x));
@@ -33,9 +36,11 @@ async function library() {
         stringify(local, { maxLength: 200 }),
         "utf-8"
       );
-      console.log(`Updated library: ${diff.join(", ")}`);
+      info(`Updated library: ${diff.join(", ")}`);
+      exportVariable("UpdatedLibrary", true);
     } else {
-      console.log("Nothing to update.");
+      exportVariable("UpdatedLibrary", false);
+      info("Nothing to update.");
     }
   } catch (error) {
     setFailed(error.message);
