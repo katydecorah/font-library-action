@@ -28,7 +28,9 @@ jobs:
         with:
           GoogleToken: ${{ secrets.GoogleToken }}
       - name: Commit files
+        if: env.UpdatedLibrary == 'true'
         run: |
+          git pull
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A && git commit -m "Updated font library"
