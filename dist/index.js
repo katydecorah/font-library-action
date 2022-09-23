@@ -9987,11 +9987,11 @@ function library() {
                 (0,core.info)(removed);
                 (0,core.exportVariable)("UpdatedLibrary", true);
             }
-            (0,core.exportVariable)('LibraryCommitMessage', commitMessage.join('; '));
+            (0,core.exportVariable)("LibraryCommitMessage", commitMessage.join("; "));
             (0,external_fs_.writeFileSync)("families.json", stringify(local.sort((a, b) => (a.family > b.family ? 1 : -1)), { maxLength: 200 }), "utf-8");
         }
         catch (error) {
-            (0,core.setFailed)(error.message);
+            (0,core.setFailed)(error);
         }
     });
 }

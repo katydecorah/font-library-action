@@ -65,7 +65,7 @@ async function library() {
       "utf-8"
     );
   } catch (error) {
-    setFailed(error.message);
+    setFailed(error);
   }
 }
 
