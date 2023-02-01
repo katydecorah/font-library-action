@@ -37,7 +37,6 @@ jobs:
           git push
 ```
 
-
 ## Action options
 
 - `GoogleToken`: Your Google Fonts access token.
