@@ -9999,14 +9999,19 @@ function library() {
             const familiesToAdd = remoteFonts.filter((x) => !localFonts.includes(x));
             // get difference between local and remote library
             const familiesToRemove = localFonts.filter((x) => !remoteFonts.includes(x));
+            const commitMessage = [];
+            const generatedData = combineLibraries(library.items, local);
+            const localGeneratedData = JSON.parse((0,external_fs_.readFileSync)("generated/data.json", "utf-8"));
             const hasFamiliesToAdd = familiesToAdd.length > 0;
             const hasFamiliesToRemove = familiesToRemove.length > 0;
-            if (!hasFamiliesToAdd && !hasFamiliesToRemove) {
+            const hasGeneratedDataToUpdate = generatedData !== localGeneratedData;
+            if (!hasFamiliesToAdd &&
+                !hasFamiliesToRemove &&
+                !hasGeneratedDataToUpdate) {
                 (0,core.exportVariable)("UpdatedLibrary", false);
                 (0,core.info)("Nothing to update.");
                 return;
             }
-            const commitMessage = [];
             if (hasFamiliesToAdd) {
                 familiesToAdd.map((font) => local.push({ family: font, tags: [] }));
                 const added = `➕ Added: ${familiesToAdd.join(", ")}`;
@@ -10021,13 +10026,85 @@ function library() {
                 (0,core.info)(removed);
                 (0,core.exportVariable)("UpdatedLibrary", true);
             }
+            if (hasGeneratedDataToUpdate) {
+                (0,external_fs_.writeFileSync)("generated/data.json", generatedData, "utf-8");
+                const updated = "📝 Updated generated data";
+                commitMessage.push(updated);
+                (0,core.info)(updated);
+                (0,core.exportVariable)("UpdatedLibrary", true);
+            }
+            if (hasFamiliesToAdd || hasFamiliesToRemove) {
+                (0,external_fs_.writeFileSync)("families.json", stringify(local.sort((a, b) => (a.family > b.family ? 1 : -1)), { maxLength: 200 }), "utf-8");
+            }
             (0,core.exportVariable)("LibraryCommitMessage", commitMessage.join("; "));
-            (0,external_fs_.writeFileSync)("families.json", stringify(local.sort((a, b) => (a.family > b.family ? 1 : -1)), { maxLength: 200 }), "utf-8");
         }
         catch (error) {
             (0,core.setFailed)(error);
         }
     });
+}
+function combineLibraries(remoteFonts, local) {
+    const combineLibrary = [];
+    for (const [index, font] of remoteFonts.entries()) {
+        const localFont = local.find((f) => f.family === font.family);
+        // Check for main variants
+        let hasItalic = false, hasBold = false, hasRegular = false, fullVariant = false;
+        if (font.variants.includes("italic")) {
+            hasItalic = true;
+        }
+        if (font.variants.includes("regular") || font.variants.includes("400")) {
+            hasRegular = true;
+        }
+        if (font.variants.includes("500") ||
+            font.variants.includes("600") ||
+            font.variants.includes("700") ||
+            font.variants.includes("800") ||
+            font.variants.includes("900")) {
+            hasBold = true;
+        }
+        if (hasBold && hasRegular && hasItalic) {
+            fullVariant = true;
+        }
+        combineLibrary.push({
+            family: font.family,
+            variants: font.variants,
+            variantCount: font.variants.length,
+            hasItalic,
+            hasBold,
+            hasRegular,
+            fullVariant,
+            subsets: font.subsets,
+            lastModified: font.lastModified,
+            category: font.category,
+            tags: localFont ? localFont.tags : [],
+            count: localFont ? localFont.tags.length : 0,
+            lineNumber: index + 2,
+        });
+    }
+    const tagArr = combineLibrary.map((f) => f.tags).flat();
+    const variantArr = combineLibrary.map((f) => f.variants).flat();
+    const subsetArr = combineLibrary.map((f) => f.subsets).flat();
+    const categoryArr = combineLibrary.map((f) => f.category);
+    return JSON.stringify({
+        uniqueTags: [...new Set(tagArr)],
+        tags: groupBy(tagArr, "tag"),
+        uniqueVariants: [...new Set(variantArr)],
+        variants: groupBy(variantArr, "variant"),
+        uniqueSubsets: [...new Set(subsetArr)],
+        subsets: groupBy(subsetArr, "subset"),
+        uniqueCategories: [...new Set(categoryArr)],
+        categories: groupBy(categoryArr, "category"),
+        families: combineLibrary.sort((a, b) => (a.family > b.family ? 1 : -1)),
+    });
+}
+function groupBy(array, label) {
+    const obj = array.reduce((obj, key) => {
+        if (!obj[key])
+            obj[key] = 0;
+        obj[key]++;
+        return obj;
+    }, {});
+    return Object.keys(obj).map((key) => ({ [label]: key, value: obj[key] }));
 }
 /* harmony default export */ const src = (library());
 
