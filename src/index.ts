@@ -142,7 +142,7 @@ function combineLibraries(
 
     combineLibrary.push({
       family,
-      slug: family.toLowerCase().replace(/ /g, "+"),
+      slug: family.replace(/ /g, "+"),
       variants,
       variantCount: variants.length,
       hasItalic,

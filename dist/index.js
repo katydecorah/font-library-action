@@ -10058,7 +10058,7 @@ function combineLibraries(remoteFonts, local) {
         const fullVariant = hasBold && hasRegular && hasItalic;
         combineLibrary.push({
             family,
-            slug: family.toLowerCase().replace(/ /g, "+"),
+            slug: family.replace(/ /g, "+"),
             variants,
             variantCount: variants.length,
             hasItalic,
