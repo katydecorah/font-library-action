@@ -33,6 +33,7 @@ type CombinedFamily = {
   tags: string[];
   count: number;
   lineNumber: number;
+  slug: string;
 };
 
 async function library() {
@@ -122,45 +123,35 @@ function combineLibraries(
 ): string {
   const combineLibrary: CombinedFamily[] = [];
 
-  for (const [index, font] of remoteFonts.entries()) {
-    const localFont = local.find((f) => f.family === font.family);
+  for (const [
+    index,
+    { family, variants, subsets, lastModified, category },
+  ] of remoteFonts.entries()) {
+    const localFont = local.find((f) => f.family === family);
 
     // Check for main variants
-    let hasItalic = false,
-      hasBold = false,
-      hasRegular = false,
-      fullVariant = false;
-    if (font.variants.includes("italic")) {
-      hasItalic = true;
-    }
-    if (font.variants.includes("regular") || font.variants.includes("400")) {
-      hasRegular = true;
-    }
-    if (
-      font.variants.includes("500") ||
-      font.variants.includes("600") ||
-      font.variants.includes("700") ||
-      font.variants.includes("800") ||
-      font.variants.includes("900")
-    ) {
-      hasBold = true;
-    }
-
-    if (hasBold && hasRegular && hasItalic) {
-      fullVariant = true;
-    }
+    const hasItalic = variants.includes("italic");
+    const hasBold =
+      variants.includes("500") ||
+      variants.includes("600") ||
+      variants.includes("700") ||
+      variants.includes("800") ||
+      variants.includes("900");
+    const hasRegular = variants.includes("regular") || variants.includes("400");
+    const fullVariant = hasBold && hasRegular && hasItalic;
 
     combineLibrary.push({
-      family: font.family,
-      variants: font.variants,
-      variantCount: font.variants.length,
+      family,
+      slug: family.toLowerCase().replace(/ /g, "+"),
+      variants,
+      variantCount: variants.length,
       hasItalic,
       hasBold,
       hasRegular,
       fullVariant,
-      subsets: font.subsets,
-      lastModified: font.lastModified,
-      category: font.category,
+      subsets,
+      lastModified,
+      category,
       tags: localFont ? localFont.tags : [],
       count: localFont ? localFont.tags.length : 0, // number of tags
       lineNumber: index + 2,
@@ -171,17 +162,21 @@ function combineLibraries(
   const variantArr = combineLibrary.map((f) => f.variants).flat();
   const subsetArr = combineLibrary.map((f) => f.subsets).flat();
   const categoryArr = combineLibrary.map((f) => f.category);
-  return JSON.stringify({
-    uniqueTags: [...new Set(tagArr)],
-    tags: groupBy(tagArr, "tag"),
-    uniqueVariants: [...new Set(variantArr)],
-    variants: groupBy(variantArr, "variant"),
-    uniqueSubsets: [...new Set(subsetArr)],
-    subsets: groupBy(subsetArr, "subset"),
-    uniqueCategories: [...new Set(categoryArr)],
-    categories: groupBy(categoryArr, "category"),
-    families: combineLibrary.sort((a, b) => (a.family > b.family ? 1 : -1)),
-  });
+  return JSON.stringify(
+    {
+      uniqueTags: [...new Set(tagArr)].sort(),
+      tags: groupBy(tagArr, "tag"),
+      uniqueVariants: [...new Set(variantArr)].sort(),
+      variants: groupBy(variantArr, "variant"),
+      uniqueSubsets: [...new Set(subsetArr)].sort(),
+      subsets: groupBy(subsetArr, "subset"),
+      uniqueCategories: [...new Set(categoryArr)].sort(),
+      categories: groupBy(categoryArr, "category"),
+      families: combineLibrary.sort((a, b) => (a.family > b.family ? 1 : -1)),
+    },
+    null,
+    2
+  );
 }
 
 function groupBy(array, label) {
